@@ -1,0 +1,97 @@
+{
+  "Förrätter": [
+    {
+      "name": "Gubbröra på kavring",
+      "price": 8900,
+      "description": "Traditionell sillröra med ägg, gräslök och ansjovis på mörkt bröd",
+      "allergens": ["fisk", "ägg", "gluten"]
+    },
+    {
+      "name": "Kantarellsoppa",
+      "price": 9500,
+      "description": "Krämig soppa med färska kantareller och en skvätt grädde",
+      "allergens": ["mjölk", "selleri"]
+    },
+    {
+      "name": "Skagenröra på toast",
+      "price": 10500,
+      "description": "Räkor i majonnäs med dill och citron, serveras på smörstekt bröd",
+      "allergens": ["skaldjur", "ägg", "gluten"]
+    }
+  ],
+  "Varmrätter": [
+    {
+      "name": "Köttbullar med potatismos",
+      "price": 15900,
+      "description": "Husets köttbullar med gräddsås, lingon och pressgurka",
+      "allergens": ["mjölk", "gluten", "ägg"]
+    },
+    {
+      "name": "Stekt strömming med potatispuré och lingon",
+      "price": 16500,
+      "description": "Klassisk rätt från södra Sverige",
+      "allergens": ["fisk", "mjölk"]
+    },
+    {
+      "name": "Vegetarisk kåldolme",
+      "price": 14500,
+      "description": "Vitkål fylld med ris och grönsaker, serverad med örtsås",
+      "allergens": ["selleri", "soja"]
+    },
+    {
+      "name": "Skärgårdsburger",
+      "price": 16900,
+      "description": "Burgare med svenskt nötkött, Västerbottensost, citrondill-sås och lingonchutney i rågbröd",
+      "sides": ["Potatisklyftor", "Inlagd gurka & rödbetor"],
+      "extras": [
+        {
+          "item": "Västerbottensost",
+          "price": 1700
+        }
+      ],
+      "allergens": ["ägg", "gluten"]
+    }
+  ],
+  "Efterrätter": [
+    {
+      "name": "Kladdkaka med grädde",
+      "price": 8500,
+      "description": "Mörk chokladkaka, kladdig och söt",
+      "allergens": ["mjölk", "ägg", "gluten"]
+    },
+    {
+      "name": "Äppelkaka med vaniljsås",
+      "price": 8900,
+      "description": "Serveras varm med hemgjord sås",
+      "allergens": ["mjölk", "ägg", "gluten"]
+    },
+    {
+      "name": "Hjortronparfait",
+      "price": 9500,
+      "description": "Glassliknande dessert med lappländska hjortron",
+      "allergens": ["mjölk", "ägg"]
+    }
+  ],
+  "Drycker": [
+    {
+      "name": "Kolsyrat vatten",
+      "price": 2000
+    },
+    {
+      "name": "Lingondricka",
+      "price": 3500
+    },
+    {
+      "name": "Lättöl",
+      "price": 4500
+    },
+    {
+      "name": "Kaffe",
+      "price": 3000
+    },
+    {
+      "name": "Te",
+      "price": 3000
+    }
+  ]
+}

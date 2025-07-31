@@ -1,0 +1,11 @@
+{
+  "params": {
+    "icon": "./icon.png",
+    "skipTrim": true,
+    "padding": [0, 0],
+    "quality": 8,
+    "themeColor": "ffffff",
+    "splashscreenColor": "ffffff",
+    "include": ["spa"]
+  }
+}
