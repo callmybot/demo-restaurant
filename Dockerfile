@@ -16,8 +16,8 @@ RUN npm install -g @quasar/cli
 WORKDIR /app
 COPY . .
 RUN npm install --omit-dev
-ENV CALLMYBOT_BOT_ID=9XU87bsY4VT645dC5gTyuT
-ENV CALLMYBOT_URL=https://widget.callmybot.app/index.js
+ENV CALLMYBOT_WIDGET_BOT_ID=9XU87bsY4VT645dC5gTyuT
+ENV CALLMYBOT_WIDGET_URL=https://widget.callmybot.app/index.js
 ENV NODE_ENV=production
 RUN quasar build -m spa
 

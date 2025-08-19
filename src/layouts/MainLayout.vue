@@ -3,7 +3,7 @@
     <q-header class="bg-white container text-black">
       <q-toolbar>
         <AppIcon width="128" />
-        <q-toolbar-title><h1 class="text-h3">Restaurang Solgmit</h1></q-toolbar-title>
+        <h1 class="text-h3">Restaurang Solgmit</h1>
       </q-toolbar>
     </q-header>
     <q-page-container>

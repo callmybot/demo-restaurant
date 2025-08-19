@@ -4,8 +4,8 @@
     "skipTrim": true,
     "padding": [0, 0],
     "quality": 8,
-    "themeColor": "ffffff",
-    "splashscreenColor": "ffffff",
+    "themeColor": "0d262b",
+    "splashscreenColor": "0d262b",
     "include": ["spa"]
   }
 }

@@ -48,8 +48,8 @@ export default defineConfig((/* ctx */) => {
       // analyze: true,
       // env: {},
       env: {
-        CALLMYBOT_BOT_ID: process.env.CALLMYBOT_BOT_ID,
-        CALLMYBOT_URL: process.env.CALLMYBOT_URL,
+        CALLMYBOT_WIDGET_BOT_ID: process.env.CALLMYBOT_WIDGET_BOT_ID,
+        CALLMYBOT_WIDGET_URL: process.env.CALLMYBOT_WIDGET_URL,
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

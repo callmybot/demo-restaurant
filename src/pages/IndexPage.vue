@@ -275,7 +275,6 @@ The price unit is cent, the currency is SEK (kr).
   )
 
 window.CallMyBot.onReady(() => {
-  window.CallMyBot.open()
-  window.CallMyBot.sendSystemMessage('Introduce yourself.')
+  window.CallMyBot.open().sendSystemMessage('Introduce yourself.')
 })
 </script>
