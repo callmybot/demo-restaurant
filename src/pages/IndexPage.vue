@@ -19,7 +19,7 @@
         </div>
       </div>
     </section>
-    <q-dialog v-model="console">
+    <q-dialog v-model="consoleDialoged">
       <q-card flat>
         <q-card-section>
           <pre>{{ consoleMessage }}</pre>
@@ -30,12 +30,13 @@
 </template>
 
 <script setup>
-import { uid } from 'quasar'
 import { computed, ref } from 'vue'
+import { uid } from 'quasar'
+import { z } from 'zod'
 
 import menu from 'assets/menu.json' with { type: 'json' }
 
-const console = computed({
+const consoleDialoged = computed({
   get: () => consoleMessage.value !== null,
   set: () => (consoleMessage.value = null),
 })
@@ -43,25 +44,25 @@ const consoleMessage = ref(null)
 
 const order = new Map()
 
-function add_items(items) {
+function addItems({ items }) {
   for (const item of items) {
     order.set(uid(), item)
   }
-  return `Order updated, you must ask for new items. Order summary: ${get_order_summary().join('|')}\n\n${get_order_items()}`
+  return `Order updated, you must ask for new items. Order summary: ${getOrderSummary().join('|')}\n\n${getOrderItems()}`
 }
 
-function cancel_order() {
+function cancelOrder() {
   delete order.clear()
   return `Order canceled, you can take a new order.`
 }
 
-function get_order_items() {
+function getOrderItems() {
   return JSON.stringify({
     items: Array.from(order.entries()),
   })
 }
 
-function get_item_details(options, extras) {
+function getItemDetails({ options, extras }) {
   const details = [
     ...(options ? options.map((option) => `${option.name}: ${option.choice}`) : []),
     ...(extras ? extras.map((extra) => `+ ${extra}`) : []),
@@ -69,9 +70,9 @@ function get_item_details(options, extras) {
   return details.length ? ` (${details.join(', ')})` : ''
 }
 
-function get_order_summary() {
+function getOrderSummary() {
   const items = Array.from(order.entries()).map(
-    ([, value]) => `${value.name}${get_item_details(value.options, value.extras)}`,
+    ([, value]) => `${value.name}${getItemDetails(value)}`,
   )
   const counts = {}
   items.forEach((item) => {
@@ -82,33 +83,33 @@ function get_order_summary() {
     .map(([item, count]) => `${count} ${item}`)
 }
 
-function remove_items(ids) {
+function removeItems({ ids }) {
   for (const id of ids) {
     order.delete(id)
   }
-  return `Order updated, you must ask for new items. Order summary: ${get_order_summary().join('|')}\n\n${get_order_items()}`
+  return `Order updated, you must ask for new items. Order summary: ${getOrderSummary().join('|')}\n\n${getOrderItems()}`
 }
 
-function submit_order(language, table) {
+function confirmOrder({ callmybot, tableNumber }) {
   if (order.size === 0) {
     return 'Error: Order is empty.'
   }
   const message = []
-  message.push(`#${table} (${language})`)
-  message.push(get_order_summary().join('\n'))
+  message.push(`#${tableNumber} (${callmybot.language})`)
+  message.push(getOrderSummary().join('\n'))
   delete order.clear()
   consoleMessage.value = message.join('\n')
   return `Order sent, you can take a new order.`
 }
 
-function update_item(id, options, extras) {
+function updateItem({ id, options, extras }) {
   if (!order.has(id)) {
     return 'Error: Order item not found.'
   }
   const item = order.get(id)
   if (options) item.options = options
   if (extras) item.extras = extras
-  return `Order item updated, you must ask for new items. Order summary: ${get_order_summary().join('|')}\n\n${get_order_items()}`
+  return `Order item updated, you must ask for new items. Order summary: ${getOrderSummary().join('|')}\n\n${getOrderItems()}`
 }
 
 window.CallMyBot.setInstructions(
@@ -123,155 +124,96 @@ If asked, you can describe how dishes are prepared or recommend drink pairings.
 Never rush the guest, and always ask if they have any questions or dietary restrictions.
 Stay in character as a server throughout the interaction.
 You must strictly limit the choices according to the restaurant's menu.
-You must update the order items progressively.
-You must confirm the order before sending it.
+You must update the order items progressively (addItems,cancelOrder,updateItem,removeItems).
+You cannot bring but confirm the order by asking the table number (confirmOrder).
 The price unit is cent, the currency is SEK (kr).
 `,
 )
   .setDatabase({ menu })
-  .addFunction(
-    'add_items',
-    'Add order items.',
+  .addTool(
+    'addItems',
     {
-      type: 'object',
-      properties: {
-        items: {
-          type: 'array',
-          description: 'The array of order items.',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                description: 'The item name.',
-              },
-              options: {
-                type: 'array',
-                description: 'The array of options.',
-                items: {
-                  type: 'object',
-                  properties: {
-                    name: {
-                      type: 'string',
-                      description: 'The option name.',
-                    },
-                    choice: {
-                      type: 'string',
-                      description: 'The option choice.',
-                    },
-                  },
-                  required: ['name', 'choice'],
-                },
-              },
-              extras: {
-                type: 'array',
-                description: 'The array of extra names.',
-                items: {
-                  type: 'string',
-                },
-              },
-            },
-            additionalProperties: false,
-            required: ['name'],
-          },
-        },
+      description: 'Add order items.',
+      inputSchema: {
+        items: z
+          .array(
+            z.object({
+              name: z.string().describe('The item name.'),
+              options: z
+                .array(
+                  z.object({
+                    name: z.string().describe('The option name.'),
+                    choice: z.string().describe('The option choice.'),
+                  }),
+                )
+                .describe('The array of options.')
+                .optional(),
+              extras: z.array(z.string()).describe('The array of extra names.').optional(),
+            }),
+          )
+          .describe('The array of order items.'),
       },
     },
-    add_items,
+    addItems,
   )
-  .addFunction(
-    'cancel_order',
-    'Cancel the order.',
+  .addTool(
+    'cancelOrder',
     {
-      type: 'object',
-      properties: {},
+      description: 'Cancel the order.',
     },
-    cancel_order,
+    cancelOrder,
   )
-  .addFunction(
-    'get_order_summary',
-    'Get the order summary.',
+  .addTool(
+    'getOrderSummary',
     {
-      type: 'object',
-      properties: {},
+      description: 'Get the order summary.',
     },
-    get_order_summary,
+    getOrderSummary,
   )
-  .addFunction(
-    'remove_items',
-    'Remove the order items.',
+  .addTool(
+    'removeItems',
     {
-      type: 'object',
-      properties: {
-        ids: {
-          type: 'array',
+      description: 'Remove the order items.',
+      inputSchema: {
+        ids: z.array(z.string(), {
           description: 'The array of item identifiers.',
-          items: {
-            type: 'string',
-          },
-        },
+        }),
       },
-      additionalProperties: false,
-      required: ['ids'],
     },
-    remove_items,
+    removeItems,
   )
-  .addFunction(
-    'submit_order',
-    'Bring, send or validate the order after confirmation.',
+  .addTool(
+    'confirmOrder',
     {
-      type: 'object',
-      properties: {
-        table: {
-          type: 'integer',
-          description: 'The mandatory table number.',
-        },
+      description: 'Confirm the order.',
+      inputSchema: {
+        tableNumber: z.number().describe('The mandatory table number.'),
+        callmybot: z.object({
+          language: z.string(),
+        }),
       },
-      additionalProperties: false,
-      required: ['table'],
     },
-    submit_order,
+    confirmOrder,
   )
-  .addFunction(
-    'update_item',
-    'Update order item.',
+  .addTool(
+    'updateItem',
     {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          description: 'The order item identifier.',
-        },
-        options: {
-          type: 'array',
-          description: 'The array of options.',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                description: 'The option name.',
-              },
-              choice: {
-                type: 'string',
-                description: 'The option choice.',
-              },
-            },
-            required: ['name', 'choice'],
-          },
-        },
-        extras: {
-          type: 'array',
-          description: 'The array of extra names.',
-          items: {
-            type: 'string',
-          },
-        },
+      description: 'Update order item.',
+      inputSchema: {
+        id: z.string().describe('The order item identifier.'),
+        options: z
+          .array(
+            z.object({
+              name: z.string().describe('The option name.'),
+              choice: z.string().describe('The option choice.'),
+            }),
+          )
+          .optional()
+          .describe('The array of options.'),
+        extras: z.array(z.string()).optional().describe('The array of extra names.'),
       },
-      additionalProperties: false,
-      required: ['id'],
     },
-    update_item,
+    updateItem,
   )
 
 window.CallMyBot.onReady(() => {
